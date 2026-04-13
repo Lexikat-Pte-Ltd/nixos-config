@@ -1,43 +1,18 @@
+# Shared developer experience — imported by every user's home-manager profile.
+# Provides: zsh + powerlevel10k, sensible git defaults, vim, tmux, kitty,
+# alacritty, and the shared CLI package set.
+#
+# Intentionally leaves git user.name / user.email unset — each user sets their
+# own identity in their personal profile via lib.recursiveUpdate or programs.git.settings.
 { config, pkgs, lib, ... }:
 
-let
-  user = "elijah";
-in
 {
-  imports = [ ./ai-tools.nix ];
-
   home = {
     enableNixpkgsReleaseCheck = false;
-    username = user;
-    homeDirectory = "/home/${user}";
     packages = import ../common/packages.nix { inherit pkgs; };
     stateVersion = "24.11";
-
-    # Symlink dotfiles-managed configs (nvim, etc.)
-    activation.linkDotfiles = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      DOTFILES_DIR="$HOME/dotfiles"
-
-      link_config() {
-        local src="$1"
-        local dest="$2"
-        if [ -e "$src" ]; then
-          if [ -e "$dest" ] || [ -L "$dest" ]; then
-            rm -rf "$dest"
-          fi
-          mkdir -p "$(dirname "$dest")"
-          ln -sf "$src" "$dest"
-          echo "Linked: $src -> $dest"
-        else
-          echo "Warning: Source not found, skipping: $src"
-        fi
-      }
-
-      # Link nvim config
-      link_config "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
-    '';
   };
 
-  # Programs - mirrors ~/dotfiles/nixos-config/modules/shared/home-manager.nix
   programs = {
     # ── Zsh ──────────────────────────────────────────────────────────────
     zsh = {
@@ -91,15 +66,13 @@ in
       '';
     };
 
-    # ── Git ──────────────────────────────────────────────────────────────
+    # ── Git (shared defaults — no identity) ──────────────────────────────
     git = {
       enable = true;
       ignores = [ "*.swp" ];
       lfs.enable = true;
       signing.format = null;
       settings = {
-        user.name = "0xEljh";
-        user.email = "elijahng96@gmail.com";
         init.defaultBranch = "main";
         core = {
           editor = "vim";
@@ -110,7 +83,6 @@ in
         diff.external = "${pkgs.difftastic}/bin/difft";
         pager.diff = "";
         pager.show = "";
-        credential.helper = "${pkgs.gh}/bin/gh auth git-credential";
       };
     };
 
@@ -179,10 +151,6 @@ in
     # ── SSH ───────────────────────────────────────────────────────────────
     ssh = {
       enable = true;
-      enableDefaultConfig = false;
-      includes = [
-        "${config.home.homeDirectory}/.ssh/config_external"
-      ];
       matchBlocks = {
         "*" = {
           serverAliveInterval = 60;
