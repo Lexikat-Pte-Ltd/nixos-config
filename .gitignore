@@ -4,3 +4,7 @@ result-*
 
 # Ignore automatically generated direnv output
 .direnv
+
+# Hardware config is generated on the target device and may contain secrets
+# Uncomment below if you want to track it:
+# !hardware-configuration.nix
