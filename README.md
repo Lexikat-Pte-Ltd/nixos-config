@@ -45,7 +45,7 @@ modules/
 
 ## Remote access
 
-Primary access is via [Tailscale](https://tailscale.com/). SSH is enabled with key-based authentication only (no passwords). Authorized keys are managed in `modules/common/users.nix`.
+Primary access is via [Tailscale](https://tailscale.com/). SSH is enabled with authorized keys and password authentication for now. Authorized keys are managed in `modules/common/users.nix`, and SSH/Tailscale settings live in `modules/common/remote-access.nix`.
 
 ## Adding users
 
@@ -64,6 +64,6 @@ The workstation config (`limiting-factor`) enables:
 
 ## Additional configs
 
-`dx.nix` is the sharded DX layer. All users are encouraged to bring their own configs!
+`dx.nix` is the shared DX layer. All users are encouraged to bring their own configs!
 
 You can set symlinks to overwrite/control global configs (e.g. .claude) using these configs, orchestrated via Home Manager.

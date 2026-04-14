@@ -6,17 +6,15 @@
 # parts you don't need. Register your profile in flake.nix under hmUsers.
 { config, pkgs, lib, ... }:
 
-let
-  dx = import ./dx.nix { inherit config pkgs lib; };
-in
 {
-  imports = [ ./ai-tools.nix ];
+  imports = [
+    ./dx.nix
+    ./ai-tools.nix
+  ];
 
   home = {
     username = "elijah";
     homeDirectory = "/home/elijah";
-    packages = dx.home.packages;
-    stateVersion = dx.home.stateVersion;
 
     # Symlink dotfiles-managed configs
     activation.linkDotfiles = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -41,20 +39,18 @@ in
     '';
   };
 
-  programs = lib.recursiveUpdate dx.programs {
-    # Git identity
-    git.settings = {
-      user.name = "0xEljh";
-      user.email = "elijahng96@gmail.com";
-      credential.helper = "${pkgs.gh}/bin/gh auth git-credential";
-    };
+  # Git identity (merges with dx.nix's shared git defaults)
+  programs.git.settings = {
+    user.name = "0xEljh";
+    user.email = "elijahng96@gmail.com";
+    credential.helper = "${pkgs.gh}/bin/gh auth git-credential";
+  };
 
-    # SSH — include external config if present
-    ssh = {
-      enableDefaultConfig = false;
-      includes = [
-        "${config.home.homeDirectory}/.ssh/config_external"
-      ];
-    };
+  # SSH — include external config if present
+  programs.ssh = {
+    enableDefaultConfig = false;
+    includes = [
+      "${config.home.homeDirectory}/.ssh/config_external"
+    ];
   };
 }

@@ -47,6 +47,21 @@
     dconf-editor
   ];
 
+  # Enable extensions system-wide via dconf so they are active on first login.
+  programs.dconf.profiles.user.databases = [{
+    settings = {
+      "org/gnome/shell" = {
+        enabled-extensions = [
+          "pop-shell@system76.com"
+          "appindicatorsupport@rgcjonas.gmail.com"
+          "dash-to-dock@micxgx.gmail.com"
+          "blur-my-shell@aunetx"
+          "nightthemeswitcher@romainvigier.fr"
+        ];
+      };
+    };
+  }];
+
   # AppIndicator support (for tray icons - Tailscale, Docker, etc.)
   services.udev.packages = [ pkgs.gnome-settings-daemon ];
 
