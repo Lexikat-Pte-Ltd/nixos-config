@@ -30,6 +30,7 @@
           useUserPackages = true;
           backupFileExtension = "backup";
           overwriteBackup = true;
+          sharedModules = [ ./modules/home/dx.nix ];
           users = hmUsers;
         };
       };

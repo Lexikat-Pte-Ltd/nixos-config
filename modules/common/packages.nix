@@ -24,7 +24,6 @@ with pkgs; [
   zoxide
   atuin
   difftastic
-  zsh-powerlevel10k
   lazygit
 
   # Encryption and security
@@ -61,6 +60,10 @@ with pkgs; [
 
   # Image processing (image.nvim)
   imagemagick
+
+  # Data transfer
+  aria2
+  pv
 
   # Media
   ffmpeg
