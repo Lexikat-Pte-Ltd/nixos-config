@@ -1,5 +1,9 @@
-# CLI tools and development packages shared across both configurations.
-# Referenced from ~/dotfiles/nixos-config/modules/shared/packages.nix
+# CLI tools and development packages shared across all users.
+# Imported by modules/home/dx.nix as the shared home-manager package set.
+#
+# Only include tools that any developer on this machine should have
+# out of the box.  Personal tools (editor plugins, themes) belong in
+# individual user profiles (e.g. modules/home/elijah.nix).
 { pkgs }:
 
 with pkgs; [
@@ -17,7 +21,6 @@ with pkgs; [
   nushell
   ouch
   ripgrep
-  tmux
   tree
   unzip
   zip
@@ -48,18 +51,11 @@ with pkgs; [
   gnumake
   cmake
 
-  # Lua (for neovim plugins)
-  lua5_1
-  luarocks
-
   # Python
   python3
   uv
   ruff
   pyright
-
-  # Image processing (image.nvim)
-  imagemagick
 
   # Data transfer
   aria2
@@ -68,14 +64,10 @@ with pkgs; [
   # Media
   ffmpeg
 
-  # Fonts (user-level)
-  meslo-lgs-nf
-  noto-fonts
-  noto-fonts-color-emoji
+  # AI / LLM
+  ollama
 
   # Misc dev tools
   direnv
   sqlite
-  wget
-  kitty
 ]

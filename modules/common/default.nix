@@ -52,13 +52,8 @@
   # Enable zsh system-wide
   programs.zsh.enable = true;
 
-  # Neovim as default editor
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-    viAlias = true;
-    vimAlias = true;
-  };
+  # Docker daemon (CLI tools are in packages.nix via home-manager)
+  virtualisation.docker.enable = true;
 
   # nix-ld for running unpatched binaries (python wheels, etc.)
   programs.nix-ld = {

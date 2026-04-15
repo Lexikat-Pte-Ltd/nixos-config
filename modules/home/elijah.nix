@@ -16,7 +16,15 @@
   home = {
     username = "elijah";
     homeDirectory = "/home/elijah";
-    packages = [ pkgs.zsh-powerlevel10k ];
+    packages = with pkgs; [
+      zsh-powerlevel10k
+
+      # Neovim and its dependencies
+      neovim
+      lua5_1
+      luarocks
+      imagemagick  # image.nvim
+    ];
 
     # Symlink dotfiles-managed configs
     activation.linkDotfiles = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
