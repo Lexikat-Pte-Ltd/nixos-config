@@ -8,6 +8,7 @@
     ../../modules/common
     ../../modules/common/users.nix
     ../../modules/common/remote-access.nix
+    ../../hardware-configuration.nix
   ];
 
   # Override: no CUDA in bootstrap (faster eval, smaller closure)
