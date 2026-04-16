@@ -68,23 +68,15 @@
   };
 
   # Fonts
-  # fonts.packages = with pkgs; [
-  #   dejavu_fonts
-  #   jetbrains-mono
-  #   noto-fonts
-  #   noto-fonts-color-emoji
-  #   meslo-lgs-nf
-  # ];
 
   fonts = {
    packages = with pkgs; [
    	dejavu_fonts
-	jetbrains-mono
-	noto-fonts
-	noto-fonts-color-emoji
-	meslo-lgs-nf
-	nerd-fonts.jetbrains-mono
-	noto-fonts-cjk-sans
+    noto-fonts
+    noto-fonts-color-emoji
+    meslo-lgs-nf
+    nerd-fonts.jetbrains-mono
+    noto-fonts-cjk-sans
     ];
     
     fontconfig.defaultFonts = {

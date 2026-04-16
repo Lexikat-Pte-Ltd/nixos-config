@@ -57,7 +57,7 @@
 
     # Media / productivity
     vlc
-    firefox
+    google-chrome
     xclip
     wl-clipboard
 
