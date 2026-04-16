@@ -5,6 +5,7 @@
 
 {
   imports = [
+    ../../hardware-configuration.nix
     ../../modules/common
     ../../modules/common/users.nix
     ../../modules/common/remote-access.nix
