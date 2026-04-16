@@ -46,4 +46,7 @@
     rsync
     lshw
   ];
+
+  networking.networkmanager.enable = true;
+
 }
