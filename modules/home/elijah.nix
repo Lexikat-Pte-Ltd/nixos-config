@@ -26,7 +26,10 @@
       imagemagick  # image.nvim
     ];
 
-    # Symlink dotfiles-managed configs
+    # Symlink dotfiles-managed configs.
+    # Source of truth lives in ~/dotfiles so configs can be edited without a
+    # home-manager rebuild. If ~/dotfiles is missing, the corresponding feature
+    # falls back to defaults (e.g. p10k runs its configuration wizard).
     activation.linkDotfiles = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       DOTFILES_DIR="$HOME/dotfiles"
 
@@ -46,18 +49,32 @@
       }
 
       link_config "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
+      link_config "$DOTFILES_DIR/nixos-config/modules/shared/config/p10k.zsh" "$HOME/.p10k.zsh"
     '';
   };
 
   programs = {
     # ── Zsh — powerlevel10k prompt ───────────────────────────────────────
-    zsh.plugins = [
-      {
-        name = "powerlevel10k";
-        src = pkgs.zsh-powerlevel10k;
-        file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
-      }
-    ];
+    # The p10k config file (~/.p10k.zsh) is symlinked from dotfiles in the
+    # activation hook above. Sourcing it from initContent makes the prompt
+    # "just work" after login without invoking `p10k configure`.
+    zsh = {
+      plugins = [
+        {
+          name = "powerlevel10k";
+          src = pkgs.zsh-powerlevel10k;
+          file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+        }
+      ];
+
+      initContent = lib.mkAfter ''
+        # Load p10k config (symlinked from ~/dotfiles by home-manager activation)
+        [[ -f $HOME/.p10k.zsh ]] && source $HOME/.p10k.zsh
+
+        # Personal aliases
+        alias ncat="notion-cat"
+      '';
+    };
 
     # ── Git — identity ───────────────────────────────────────────────────
     git.settings = {

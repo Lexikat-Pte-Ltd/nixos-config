@@ -11,6 +11,7 @@
     ../../modules/common/remote-access.nix
     ./gpu.nix
     ./gui.nix
+    ./power.nix
   ];
 
   networking.hostName = "limiting-factor";
