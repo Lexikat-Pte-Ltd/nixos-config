@@ -40,20 +40,13 @@
     CUDA_PATH = "${pkgs.cudatoolkit}";
   };
 
-  # NVIDIA container toolkit for Docker GPU passthrough
+  # NVIDIA container toolkit for Docker GPU passthrough.
+  # This enables the upstream `nvidia-container-toolkit-cdi-generator.service`,
+  # which writes /etc/cdi/nvidia.yaml on boot (with `ExecStartPre=udevadm settle`
+  # so it waits for the kernel module to appear). Do NOT add a manual
+  # nvidia-cdi-generator service on top — it duplicates the work and races
+  # against driver load on first boot.
   hardware.nvidia-container-toolkit.enable = true;
-
-  # Generate CDI spec so Docker can discover GPUs
-  systemd.services.nvidia-cdi-generator = {
-    description = "Generate NVIDIA CDI spec for container GPU access";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "nvidia-persistenced.service" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = "${pkgs.nvidia-container-toolkit}/bin/nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml --nvidia-ctk-path=${pkgs.nvidia-container-toolkit}/bin/nvidia-ctk";
-    };
-  };
 
   # nix-ld libraries for CUDA applications (python wheels, etc.)
   programs.nix-ld.libraries = with pkgs; [
