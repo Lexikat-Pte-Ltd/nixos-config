@@ -68,13 +68,31 @@
   };
 
   # Fonts
-  fonts.packages = with pkgs; [
-    dejavu_fonts
-    jetbrains-mono
-    noto-fonts
-    noto-fonts-color-emoji
-    meslo-lgs-nf
-  ];
+  # fonts.packages = with pkgs; [
+  #   dejavu_fonts
+  #   jetbrains-mono
+  #   noto-fonts
+  #   noto-fonts-color-emoji
+  #   meslo-lgs-nf
+  # ];
+
+  fonts = {
+   packages = with pkgs; [
+   	dejavu_fonts
+	jetbrains-mono
+	noto-fonts
+	noto-fonts-color-emoji
+	meslo-lgs-nf
+	nerd-fonts.jetbrains-mono
+	noto-fonts-cjk-sans
+    ];
+    
+    fontconfig.defaultFonts = {
+      monospace = [ "MesloLGS NF" "JetBrainsMono Nerd Font"];
+      sansSerif = [ "Noto Sans" ];
+      serif = [ "Noto Serif" ];
+    };
+  };
 
   system.stateVersion = "24.11";
 }

@@ -37,7 +37,8 @@
     };
   };
 
-  # Firewall
+  # Networking
+  networking.networkmanager.enable = true;
   networking.firewall.enable = true;
 
   # Additional workstation packages
