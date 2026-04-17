@@ -1,45 +1,72 @@
-# Links AI tool configs from ~/dotfiles/ai-tools.
-# Mirrors ~/dotfiles/nixos-config/modules/shared/ai-tools.nix
+# AI tool configuration for OpenCode and Claude Code.
+#
+# Config sources (checked in order, first match wins):
+#   1. ~/dotfiles/ai-tools   — personal overrides (optional)
+#   2. ./ai-tools             — in-repo defaults shipped with this flake
+#
+# To customise: either populate ~/dotfiles/ai-tools (mirrors the structure of
+# ./ai-tools) or edit the in-repo defaults directly.
 { config, pkgs, lib, ... }:
 
 {
   home.activation.setupAITools = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    DOTFILES_DIR="$HOME/dotfiles"
-    AI_TOOLS="$DOTFILES_DIR/ai-tools"
+    DOTFILES_AI="$HOME/dotfiles/ai-tools"
+    REPO_AI="$(dirname "$(readlink -f "${toString ./ai-tools.nix}")")/ai-tools"
+
+    # resolve SRC — prefer dotfiles, fall back to in-repo defaults.
+    # Usage: resolve <relative-path>
+    # Sets SRC to the first existing path, or empty if neither exists.
+    resolve() {
+      local rel="$1"
+      if [ -e "$DOTFILES_AI/$rel" ]; then
+        SRC="$DOTFILES_AI/$rel"
+      elif [ -e "$REPO_AI/$rel" ]; then
+        SRC="$REPO_AI/$rel"
+      else
+        SRC=""
+      fi
+    }
 
     link_config() {
       local src="$1" dest="$2"
-      if [ -e "$src" ]; then
+      if [ -n "$src" ] && [ -e "$src" ]; then
         [ -e "$dest" ] || [ -L "$dest" ] && rm -rf "$dest"
         mkdir -p "$(dirname "$dest")"
         ln -sf "$src" "$dest"
         echo "Linked: $src -> $dest"
-      else
-        echo "Warning: Source not found: $src"
       fi
     }
 
     concat_with_separator() {
       local base="$1" ext="$2" out="$3"
-      if [ -f "$base" ]; then
+      if [ -n "$base" ] && [ -f "$base" ]; then
         mkdir -p "$(dirname "$out")"
         cat "$base" > "$out"
-        [ -f "$ext" ] && printf '\n\n---\n\n' >> "$out" && cat "$ext" >> "$out"
+        if [ -n "$ext" ] && [ -f "$ext" ]; then
+          printf '\n\n---\n\n' >> "$out"
+          cat "$ext" >> "$out"
+        fi
         echo "Generated: $out"
       fi
     }
 
-    # OpenCode
-    link_config "$AI_TOOLS/opencode/opencode.json" "$HOME/.config/opencode/opencode.json"
-    link_config "$AI_TOOLS/shared/skills"          "$HOME/.config/opencode/skills"
-    link_config "$AI_TOOLS/opencode/agents"        "$HOME/.config/opencode/agents"
-    link_config "$AI_TOOLS/opencode/commands"      "$HOME/.config/opencode/commands"
-    concat_with_separator "$AI_TOOLS/shared/AI.md" "$AI_TOOLS/opencode/AGENTS.md" "$HOME/.config/opencode/AGENTS.md"
+    # ── OpenCode ──────────────────────────────────────────────────────────
+    resolve "opencode/opencode.json"; link_config "$SRC" "$HOME/.config/opencode/opencode.json"
+    resolve "shared/skills";          link_config "$SRC" "$HOME/.config/opencode/skills"
+    resolve "opencode/agents";        link_config "$SRC" "$HOME/.config/opencode/agents"
+    resolve "opencode/commands";      link_config "$SRC" "$HOME/.config/opencode/commands"
 
-    # Claude Code
-    link_config "$AI_TOOLS/claude-code/settings.json" "$HOME/.claude/settings.json"
-    link_config "$AI_TOOLS/shared/skills"             "$HOME/.claude/skills"
-    link_config "$AI_TOOLS/claude-code/agents"        "$HOME/.claude/agents"
-    concat_with_separator "$AI_TOOLS/shared/AI.md" "$AI_TOOLS/claude-code/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+    resolve "shared/AI.md";           SHARED_AI="$SRC"
+    resolve "opencode/AGENTS.md";     OC_AGENTS="$SRC"
+    concat_with_separator "$SHARED_AI" "$OC_AGENTS" "$HOME/.config/opencode/AGENTS.md"
+
+    # ── Claude Code ───────────────────────────────────────────────────────
+    resolve "claude-code/settings.json"; link_config "$SRC" "$HOME/.claude/settings.json"
+    resolve "shared/skills";             link_config "$SRC" "$HOME/.claude/skills"
+    resolve "claude-code/agents";        link_config "$SRC" "$HOME/.claude/agents"
+
+    resolve "shared/AI.md";              SHARED_AI="$SRC"
+    resolve "claude-code/CLAUDE.md";     CC_CLAUDE="$SRC"
+    concat_with_separator "$SHARED_AI" "$CC_CLAUDE" "$HOME/.claude/CLAUDE.md"
   '';
 }

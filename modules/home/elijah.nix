@@ -1,18 +1,14 @@
 # Elijah's personal home-manager profile.
 #
-# The shared DX layer (dx.nix) is applied automatically via sharedModules in
-# flake.nix. This file adds: git identity, dotfiles symlinks, AI tool configs,
-# and personal preferences (themes, keybindings, prompt).
+# The shared DX layer (dx.nix) and AI tool configs (ai-tools.nix) are applied
+# automatically via sharedModules in flake.nix. This file adds: git identity,
+# dotfiles symlinks, and personal preferences (themes, keybindings, prompt).
 #
 # Other users: copy this file, change the username/identity, and remove the
 # parts you don't need. Register your profile in flake.nix under hmUsers.
 { config, pkgs, lib, ... }:
 
 {
-  imports = [
-    ./ai-tools.nix
-  ];
-
   home = {
     username = "elijah";
     homeDirectory = "/home/elijah";

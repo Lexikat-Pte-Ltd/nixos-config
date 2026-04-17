@@ -21,8 +21,9 @@ modules/
   common/                        # machine-level: nix settings, users, packages, SSH/Tailscale
   home/
     dx.nix                       # shared DX: zsh, vim, tmux, kitty, git defaults, CLI tools
-    elijah.nix                   # personal: git identity, dotfiles symlinks, ai-tools
-    ai-tools.nix                 # helper to setup ai related global configs
+    ai-tools.nix                 # shared: populates ~/.config/opencode and ~/.claude
+    ai-tools/                    # default AI tool configs (see AI Tools below)
+    elijah.nix                   # personal: git identity, dotfiles symlinks
 ```
 
 ## Setup
@@ -61,6 +62,43 @@ The workstation config (`limiting-factor`) enables:
 - CUDA toolkit (system-wide)
 - NVIDIA container toolkit for Docker GPU passthrough (CDI)
 - `nvtop` for GPU monitoring
+
+## AI Tools
+
+`ai-tools.nix` is a shared module (like `dx.nix`) that configures [OpenCode](https://opencode.ai) and [Claude Code](https://claude.ai/code) for every user. It runs during `nixos-rebuild switch` and populates each user's `~/.config/opencode/` and `~/.claude/` via symlinks.
+
+### How config resolution works
+
+For each config file, the activation script checks two locations **in order**:
+
+1. **`~/dotfiles/ai-tools/`** — personal overrides (per-user, since `$HOME` differs)
+2. **`modules/home/ai-tools/`** — in-repo defaults (shared, read-only fallback)
+
+The first match wins. If neither exists for a given file, it is silently skipped.
+
+This means:
+- **Out of the box**, every user gets the in-repo defaults (minimal placeholders).
+- **To customise**, create `~/dotfiles/ai-tools/` mirroring the structure below and add your own configs. Only the files you provide will override; everything else falls back to the in-repo defaults.
+
+### Directory structure
+
+```
+ai-tools/
+├── shared/
+│   ├── AI.md              # instructions shared by both tools
+│   └── skills/            # skill definitions (symlinked into both tools)
+├── opencode/
+│   ├── opencode.json      # model/provider config (dotfiles only)
+│   ├── AGENTS.md          # concatenated after shared/AI.md
+│   ├── agents/            # agent definitions
+│   └── commands/          # slash commands (dotfiles only)
+└── claude-code/
+    ├── settings.json      # Claude Code settings (dotfiles only)
+    ├── CLAUDE.md          # concatenated after shared/AI.md
+    └── agents/            # agent definitions
+```
+
+Files marked *(dotfiles only)* are not shipped in the in-repo defaults — they only activate if present in your `~/dotfiles/ai-tools/`.
 
 ## Additional configs
 

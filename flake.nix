@@ -30,7 +30,10 @@
           useUserPackages = true;
           backupFileExtension = "backup";
           overwriteBackup = true;
-          sharedModules = [ ./modules/home/dx.nix ];
+          sharedModules = [
+            ./modules/home/dx.nix
+            ./modules/home/ai-tools.nix
+          ];
           users = hmUsers;
         };
       };
