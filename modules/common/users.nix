@@ -19,14 +19,35 @@
     initialPassword = "admin";
   };
 
-  # ── Example: add another user ─────────────────────────────────────────
-  # users.users.alice = {
-  #   isNormalUser = true;
-  #   shell = pkgs.zsh;
-  #   description = "Alice";
-  #   extraGroups = [ "docker" "video" "render" ];
-  #   openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAA..." ];
-  # };
+  # ── Jennifer ───────────────────────────────────────────────────────────
+  users.users.jennifer = {
+    isNormalUser = true;
+    shell = pkgs.zsh;
+    description = "Jennifer";
+    extraGroups = [ "wheel" "docker" "video" "render" ];
+    initialPassword = "admin";
+  };
+
+  # ── Akira ─────────────────────────────────────────────────────────────
+  users.users.akira = {
+    isNormalUser = true;
+    shell = pkgs.zsh;
+    description = "Akira";
+    extraGroups = [ "wheel" "docker" "video" "render" ];
+    initialPassword = "admin";
+  };
+
+  # ── Michael ────────────────────────────────────────────────────────────
+  users.users.michael = {
+    isNormalUser = true;
+    shell = pkgs.zsh;
+    description = "Michael";
+    extraGroups = [ "wheel" "docker" "video" "render" ];
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP46GqmI1zYmmcAXtZk2XriAYSDmZX6N9LPiRt+JfB3y"
+    ];
+    initialPassword = "admin";
+  };
 
   # Remove or extend once the machine is stable.
   users.users.root.openssh.authorizedKeys.keys = [

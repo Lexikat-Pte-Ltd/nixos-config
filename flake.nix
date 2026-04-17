@@ -21,7 +21,9 @@
       #   3. Add your username here
       hmUsers = {
         elijah = import ./modules/home/elijah.nix;
-        # alice = import ./modules/home/alice.nix;
+        jennifer = import ./modules/home/jennifer.nix;
+        akira = import ./modules/home/akira.nix;
+        michael = import ./modules/home/michael.nix;
       };
 
       hmModule = {

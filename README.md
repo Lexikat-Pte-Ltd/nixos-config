@@ -26,7 +26,30 @@ modules/
     elijah.nix                   # personal: git identity, dotfiles symlinks
 ```
 
-## Setup
+## Usage
+
+After making changes to any `.nix` file, apply them with:
+
+```bash
+sudo nixos-rebuild switch --flake .#limiting-factor
+```
+
+This rebuilds the system config **and** all home-manager user profiles in one step. Changes to shared modules (`dx.nix`, `ai-tools.nix`) take effect for every user; changes to a personal profile (e.g. `elijah.nix`) only affect that user.
+
+To test a config without making it the default boot entry:
+
+```bash
+sudo nixos-rebuild test --flake .#limiting-factor
+```
+
+To build without activating (useful for checking evaluation errors):
+
+```bash
+nixos-rebuild build --flake .#limiting-factor
+```
+
+<details>
+<summary><strong>Initial setup (first-time install only)</strong></summary>
 
 1. Boot the NixOS installer on the target machine.
 2. Partition disks and install NixOS.
@@ -43,6 +66,8 @@ modules/
    ```
 
 5. Build the bootstrap config first, then switch to the full workstation once stable.
+
+</details>
 
 ## Remote access
 
@@ -100,8 +125,14 @@ ai-tools/
 
 Files marked *(dotfiles only)* are not shipped in the in-repo defaults — they only activate if present in your `~/dotfiles/ai-tools/`.
 
-## Additional configs
+## Personalising your environment
 
-`dx.nix` is the shared DX layer. All users are encouraged to bring their own configs!
+The shared modules (`dx.nix`, `ai-tools.nix`) provide a common baseline for all users. Your personal profile (`modules/home/<you>.nix`) is where you add overrides — git identity, themes, keybindings, extra packages, etc.
 
-You can set symlinks to overwrite/control global configs (e.g. .claude) using these configs, orchestrated via Home Manager.
+For configs that live outside of Nix (e.g. neovim, AI tools), the pattern used throughout this repo is **symlink-based overrides managed by Home Manager activation hooks**:
+
+1. Defaults live in this repo (e.g. `modules/home/ai-tools/`).
+2. Personal overrides live in `~/dotfiles/` (outside this repo, per-user).
+3. Activation hooks symlink from the target location (e.g. `~/.config/opencode/`) to whichever source exists, preferring `~/dotfiles` over in-repo defaults.
+
+This keeps personal config out of the shared repo while ensuring everything works out of the box for users who haven't set up dotfiles yet. See `ai-tools.nix` and `elijah.nix` for examples of this pattern.

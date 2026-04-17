@@ -65,7 +65,9 @@ with pkgs; [
   ffmpeg
 
   # AI / LLM
+  claude-code
   ollama
+  opencode
 
   # Misc dev tools
   direnv
