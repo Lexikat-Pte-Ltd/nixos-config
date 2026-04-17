@@ -7,11 +7,17 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    claude-code-nix.url = "github:sadjow/claude-code-nix";
   };
 
-  outputs = { self, nixpkgs, home-manager } @inputs:
+  outputs = { self, nixpkgs, home-manager, claude-code-nix, ... } @inputs:
     let
       system = "x86_64-linux";
+
+      # Use latest claude-code from dedicated flake (updates hourly)
+      claude-code-overlay = final: prev: {
+        claude-code = claude-code-nix.packages.${system}.claude-code;
+      };
 
       # ── Home-manager user profiles ───────────────────────────────────────
       # Each user imports the shared DX layer (modules/home/dx.nix) and adds
@@ -50,6 +56,7 @@
           inherit system;
           specialArgs = inputs;
           modules = [
+            { nixpkgs.overlays = [ claude-code-overlay ]; }
             home-manager.nixosModules.home-manager
             hmModule
             ./hosts/bootstrap
@@ -63,6 +70,7 @@
           inherit system;
           specialArgs = inputs;
           modules = [
+            { nixpkgs.overlays = [ claude-code-overlay ]; }
             home-manager.nixosModules.home-manager
             hmModule
             ./hosts/workstation
