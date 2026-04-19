@@ -29,13 +29,19 @@
     fsType = "ext4";
   };
 
-  # Docker with GPU support
+  # Docker with GPU support.
+  # `cdi-spec-dirs` must include `/var/run/cdi` because the upstream
+  # `nvidia-container-toolkit-cdi-generator.service` writes its spec to
+  # `/run/cdi/nvidia-container-toolkit.json` (via the unit's `RuntimeDirectory=cdi`).
+  # Omitting it makes Docker blind to the generated spec and `--device
+  # nvidia.com/gpu=all` fails with "unresolvable CDI devices". This list
+  # matches Docker's own default; we just spell it out for clarity.
   virtualisation.docker = {
     enable = true;
     logDriver = "json-file";
     daemon.settings = {
       features.cdi = true;
-      "cdi-spec-dirs" = [ "/etc/cdi" ];
+      "cdi-spec-dirs" = [ "/etc/cdi" "/var/run/cdi" ];
     };
   };
 

@@ -42,10 +42,14 @@
 
   # NVIDIA container toolkit for Docker GPU passthrough.
   # This enables the upstream `nvidia-container-toolkit-cdi-generator.service`,
-  # which writes /etc/cdi/nvidia.yaml on boot (with `ExecStartPre=udevadm settle`
-  # so it waits for the kernel module to appear). Do NOT add a manual
-  # nvidia-cdi-generator service on top — it duplicates the work and races
-  # against driver load on first boot.
+  # which writes `/run/cdi/nvidia-container-toolkit.json` on boot (the unit
+  # declares `RuntimeDirectory=cdi`, and ordering is `after =
+  # systemd-udev-settle.service` so it waits for the kernel module to appear).
+  # Make sure `virtualisation.docker.daemon.settings."cdi-spec-dirs"` includes
+  # `/var/run/cdi` (see hosts/workstation/default.nix) — otherwise Docker
+  # silently never sees the generated spec.
+  # Do NOT add a manual nvidia-cdi-generator service on top — it duplicates
+  # the work and races against driver load on first boot.
   hardware.nvidia-container-toolkit.enable = true;
 
   # nix-ld libraries for CUDA applications (python wheels, etc.)
