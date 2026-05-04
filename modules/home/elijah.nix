@@ -68,6 +68,7 @@
         [[ -f $HOME/.p10k.zsh ]] && source $HOME/.p10k.zsh
 
         # Personal aliases
+        alias notion-cat="uv run $HOME/dotfiles/scripts/notion_cat.py"
         alias ncat="notion-cat"
       '';
     };

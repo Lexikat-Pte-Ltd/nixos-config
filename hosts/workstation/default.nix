@@ -36,12 +36,23 @@
   # Omitting it makes Docker blind to the generated spec and `--device
   # nvidia.com/gpu=all` fails with "unresolvable CDI devices". This list
   # matches Docker's own default; we just spell it out for clarity.
+  #
+  # `default-address-pools` overrides Docker's built-in pools (which top
+  # out at ~31 usable /20 user bridge networks — enough for ~10 slots in
+  # nsl2's thread-per-slot generator, then `all predefined address pools
+  # have been fully subnetted`). Replacing with 10.0.0.0/8 at size=24
+  # yields 65,536 /24 subnets (254 hosts each), so the practical ceiling
+  # becomes CPU/RAM rather than IP space. Safe to drop in: existing
+  # networks keep their current subnets until recreated.
   virtualisation.docker = {
     enable = true;
     logDriver = "json-file";
     daemon.settings = {
       features.cdi = true;
       "cdi-spec-dirs" = [ "/etc/cdi" "/var/run/cdi" ];
+      default-address-pools = [
+        { base = "10.0.0.0/8"; size = 24; }
+      ];
     };
   };
 
